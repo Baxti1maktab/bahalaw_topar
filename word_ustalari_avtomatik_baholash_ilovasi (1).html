@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <title>WORD USTALARI – Avtomatikalıq Bahalaw</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f4f6fb;padding:20px}
+    h1{text-align:center;color:#1e40af}
+    .panel{background:#fff;padding:15px;border-radius:10px;margin-bottom:15px}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden}
+    th,td{border:1px solid #ddd;padding:8px;text-align:center}
+    th{background:#2563eb;color:white}
+    input{width:70px;padding:4px;text-align:center}
+    .total{font-weight:bold;background:#e0f2fe}
+    .winner{background:#bbf7d0;font-weight:bold}
+    button{padding:10px 16px;border:none;border-radius:8px;background:#2563eb;color:#fff;cursor:pointer}
+    button:hover{background:#1e40af}
+  </style>
+</head>
+<body>
+
+<h1>🏆 "WORD USTALARI" Jarısı</h1>
+
+<div class="panel">
+  👤 Tóreshi: <input id="judge" placeholder="Atı, familiyası">
+  📅 Kún: <input type="date" id="date">
+</div>
+
+<table id="table">
+  <thead>
+    <tr id="headRow"></tr>
+  </thead>
+  <tbody id="bodyRows"></tbody>
+</table>
+
+<div class="panel" id="winnerBox">🏅 Kóp ball alğan topar: —</div>
+<div class="panel" id="nominations">
+  🏅 <b>Nominaciyalar:</b><br>
+  🎨 Eñ kreativ dizayn: —<br>
+  🧠 Texnik daho: —<br>
+  🤝 Birge islesiwshi topar: —
+</div>
+
+<div class="panel" style="text-align:center">
+  <button onclick="window.print()">🖨️ Chıqarıw / PDF</button>
+</div>
+
+<script>
+const groups = ['Sport Álemi','Texno-Gid','Aspaz','Tábiyat','Álem'];
+const headers=['Topar','Header Tekst','Header Súwret','Footer','Muqaba','Toparlıq jumıs','BARLIǴI'];
+
+function draw(){
+  const head=document.getElementById('headRow');
+  head.innerHTML='';
+  headers.forEach(h=>head.innerHTML+=`<th>${h}</th>`);
+
+  const body=document.getElementById('bodyRows');
+  body.innerHTML='';
+  groups.forEach((g,i)=>{
+    let row=`<tr id="row${i}"><td>${g}</td>`;
+    for(let j=0;j<5;j++) row+=`<td><input type="number" min="0" max="5" id="g${i}_${j}" oninput="calc(${i})"></td>`;
+    row+=`<td class="total" id="total${i}">0</td></tr>`;
+    body.innerHTML+=row;
+  });
+}
+
+function calc(i){
+  let sum=0;
+  let creative=-1, tech=-1, team=-1;
+  let cI=-1,tI=-1,tmI=-1;
+
+  groups.forEach((_,i)=>{
+    const hText = Number(document.getElementById(`g${i}_0`).value||0);
+    const hImg  = Number(document.getElementById(`g${i}_1`).value||0);
+    const footer= Number(document.getElementById(`g${i}_2`).value||0);
+    const cover = Number(document.getElementById(`g${i}_3`).value||0);
+    const teamw = Number(document.getElementById(`g${i}_4`).value||0);
+    const total = hText+hImg+footer+cover+teamw;
+    document.getElementById(`total${i}`).innerText=total;
+    document.getElementById(`row${i}`).classList.remove('winner');
+  });
+  findWinnerAndNom();
+}
+
+function findWinnerAndNom(){
+  let max=-1, win=-1;
+  let creative=-1, tech=-1, team=-1;
+  let cI=-1, tI=-1, tmI=-1;
+  groups.forEach((_,i)=>{
+    const hText = Number(document.getElementById(`g${i}_0`).value||0);
+    const hImg  = Number(document.getElementById(`g${i}_1`).value||0);
+    const footer= Number(document.getElementById(`g${i}_2`).value||0);
+    const cover = Number(document.getElementById(`g${i}_3`).value||0);
+    const teamw = Number(document.getElementById(`g${i}_4`).value||0);
+    const total = hText+hImg+footer+cover+teamw;
+
+    if(total>max){max=total;win=i}
+    if(hText+hImg>creative){creative=hText+hImg;cI=i}
+    if(footer+cover>tech){tech=footer+cover;tI=i}
+    if(teamw>team){team=teamw;tmI=i}
+  });
+
+  if(win>=0){
+    document.getElementById(`row${win}`).classList.add('winner');
+    document.getElementById('winnerBox').innerText=`🏅 Kóp ball alğan topar: ${groups[win]} (${max} ball)`;
+  }
+  document.getElementById('nominations').innerHTML = `
+    🏅 <b>Nominatsiyalar:</b><br>
+    🎨 Eñ kreativ dizayn: ${groups[cI]}<br>
+    🧠 Texnik daho: ${groups[tI]}<br>
+    🤝 Birge islesiwshi topar: ${groups[tmI]}
+  `;
+}
+
+draw();
+</script>
+
+</body>
+</html>
